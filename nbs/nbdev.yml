@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "katlas-raw"
+  site-url: "https://sky1ove.github.io/katlas-raw"
+  description: "Raw code to generate figures in the paper of KATLAS"
+  repo-branch: main
+  repo-url: "https://github.com/sky1ove/katlas-raw"
