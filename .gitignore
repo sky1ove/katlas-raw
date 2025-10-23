@@ -13,6 +13,13 @@ _tmp*
 tmp*
 tags
 *.pkg
+raw
+fig
+train
+old
+out
+models
+_*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
