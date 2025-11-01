@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>DL training – katlas-raw</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="DL training – katlas-raw">
+<meta property="og:description" content="Raw code to generate figures in the paper of KATLAS">
+<meta property="og:image" content="https://sky1ove.github.io/katlas-raw/kinase_domain/kd_07a_cddm_training_subfamily_files/figure-html/cell-37-output-2.png">
+<meta property="og:site_name" content="katlas-raw">
+<meta property="og:image:height" content="1320">
+<meta property="og:image:width" content="2200">
+<meta name="twitter:title" content="DL training – katlas-raw">
+<meta name="twitter:description" content="Raw code to generate figures in the paper of KATLAS">
+<meta name="twitter:image" content="https://sky1ove.github.io/katlas-raw/kinase_domain/kd_07a_cddm_training_subfamily_files/figure-html/cell-37-output-2.png">
+<meta name="twitter:image-height" content="1320">
+<meta name="twitter:image-width" content="2200">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">katlas-raw</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../kinase_domain/kd_01_get_all_kd.html">kinase_domain</a></li><li class="breadcrumb-item"><a href="../kinase_domain/kd_07a_cddm_training_subfamily.html">DL training</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">katlas-raw</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preprocess_dataset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preprocess kinase-substrate datasets</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../eda_fig1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exploratory data analysis</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../site_promiscuity_fig1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Site promiscuity</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pssm_hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering of PSSM</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05_PSSM_example.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">05_PSSM_example.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modi_group.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modi group</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scale_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSPA scaled data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Background frequencies</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../specificity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Specificity comparison</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sty_composition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">STY composition</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../plot_cddm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot heatmap and logo of CDDM</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../plot_pspa_figure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSPA figures</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_CDDM_umap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CDDM umap</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../get_aa_relationship.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get AA relationship</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pspa_cddm_heatmap_compare.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Heatmap/ST/JSD/cosine comparison</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pssms_split_test_all.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pssms_split_test_no_psp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pssms_split_test_psp_02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scoring_compare_all.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scoring_compare_psp_02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reactome_path_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway for each PSSM</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reactome_path_plot_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot reactome pathways: PSPA</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reactome_path_plot_cddm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot reactome pathways: CDDM</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../motif_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kmeans motifs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../motif_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Motif plot</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../22_motif_web_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">22_motif_web_data.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../23_motif_kinase_similarity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cosine similarity with PSPA</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">kinase_domain</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_01_get_all_kd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get all kinase domain sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_02_pseudo_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Alignment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_03_feature_extract.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Extract KD features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_04_prepare_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prepare data for training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_05_pspa_training_model_comparison_all.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DL training: Model comparison on T5 feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_06a_pspa_training_feature_comparison_cnn_group.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DL training: Feature comparison on CNN model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_06b_pspa_training_feature_comparison_cnn_subfamily.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DL training: Feature comparison on CNN model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_06c_pspa_training_feature_comparison_mlp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DL training: Feature comparison on MLP model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_07a_cddm_training_subfamily.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">DL training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_07b_pspa_training_subfamily.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DL training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_08a_similarity_relationship.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KD similarity &amp; PSSM similarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_08b_similarity_relationship_cddm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KD similarity &amp; PSSM similarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_09a_predict_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Predict</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_09b_predict_cddm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Predict</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_10_plot_umap_known_unk.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot UMAP of known &amp; unknown KD</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_11_plot_pspa_kd_t5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">kd_11_plot_pspa_kd_t5.html</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../kinase_domain/kd_12_compare_pred_psp_known.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Comopare the two</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#split" id="toc-split" class="nav-link" data-scroll-target="#split">Split</a></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
+  <li><a href="#loss" id="toc-loss" class="nav-link" data-scroll-target="#loss">Loss</a></li>
+  <li><a href="#metrics" id="toc-metrics" class="nav-link" data-scroll-target="#metrics">Metrics</a></li>
+  <li><a href="#cv-train" id="toc-cv-train" class="nav-link" data-scroll-target="#cv-train">CV train</a></li>
+  <li><a href="#score" id="toc-score" class="nav-link" data-scroll-target="#score">Score</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas-raw/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="kd_07a_cddm_training_subfamily.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../kinase_domain/kd_01_get_all_kd.html">kinase_domain</a></li><li class="breadcrumb-item"><a href="../kinase_domain/kd_07a_cddm_training_subfamily.html">DL training</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">DL training</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="a0725fd0-3315-4517-8282-9348ab47d247" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os, random</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.data <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.train <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastai.vision.<span class="bu">all</span> <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.dnn <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cf93dc91-7e32-4b82-862e-bdb6cbebb831" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>seed_everything()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="7e79e142-f843-4c7c-8281-b3ccb763b1ea" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>def_device</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>'cuda'</code></pre>
+</div>
+</div>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<div id="701b2457-cb59-4714-9061-078974218e51" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>pd.read_parquet(<span class="st">'train/cddm_t5.parquet'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="63ad71cf-01ed-4606-b867-7114564eb7b5" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>info<span class="op">=</span>Data.get_kinase_info()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> info[info.pseudo<span class="op">==</span><span class="st">'0'</span>]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> info[info.kd_ID.notna()]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>subfamily_map <span class="op">=</span> info[[<span class="st">'kd_ID'</span>,<span class="st">'subfamily'</span>]].drop_duplicates().set_index(<span class="st">'kd_ID'</span>)[<span class="st">'subfamily'</span>]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>family_map <span class="op">=</span> info[[<span class="st">'kd_ID'</span>,<span class="st">'family'</span>]].drop_duplicates().set_index(<span class="st">'kd_ID'</span>)[<span class="st">'family'</span>]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>group_map <span class="op">=</span> info[[<span class="st">'kd_ID'</span>,<span class="st">'group'</span>]].drop_duplicates().set_index(<span class="st">'kd_ID'</span>)[<span class="st">'group'</span>]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>kinase_info <span class="op">=</span> pd.DataFrame(df.index.tolist(),columns<span class="op">=</span>[<span class="st">'kinase'</span>])</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>kinase_info[<span class="st">'subfamily'</span>] <span class="op">=</span> kinase_info.kinase.<span class="bu">map</span>(subfamily_map)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>kinase_info[<span class="st">'family'</span>] <span class="op">=</span> kinase_info.kinase.<span class="bu">map</span>(family_map)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>kinase_info[<span class="st">'group'</span>] <span class="op">=</span> kinase_info.kinase.<span class="bu">map</span>(group_map)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="330147ea-e541-4a5a-96e8-b630b7767d0a" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>df.reset_index()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="33d7d304-5f56-42f6-a096-37ce1aec8e01" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df.columns</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>Index(['index', '-20P', '-19P', '-18P', '-17P', '-16P', '-15P', '-14P', '-13P',
+       '-12P',
+       ...
+       'T5_1014', 'T5_1015', 'T5_1016', 'T5_1017', 'T5_1018', 'T5_1019',
+       'T5_1020', 'T5_1021', 'T5_1022', 'T5_1023'],
+      dtype='object', length=1968)</code></pre>
+</div>
+</div>
+<div id="882d424f-1af7-4780-8af0-1336603685de" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># column name of feature and target</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>feat_col <span class="op">=</span> df.columns[df.columns.<span class="bu">str</span>.startswith(<span class="st">'T5_'</span>)]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>target_col <span class="op">=</span> df.columns[<span class="op">~</span>df.columns.isin(feat_col)][<span class="dv">1</span>:]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f891e546-80c0-47cc-b882-3818a6a0818d" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>feat_col</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>Index(['T5_0', 'T5_1', 'T5_2', 'T5_3', 'T5_4', 'T5_5', 'T5_6', 'T5_7', 'T5_8',
+       'T5_9',
+       ...
+       'T5_1014', 'T5_1015', 'T5_1016', 'T5_1017', 'T5_1018', 'T5_1019',
+       'T5_1020', 'T5_1021', 'T5_1022', 'T5_1023'],
+      dtype='object', length=1024)</code></pre>
+</div>
+</div>
+</section>
+<section id="split" class="level2">
+<h2 class="anchored" data-anchor-id="split">Split</h2>
+<div id="2682da19-cb3a-48ae-ab98-b5fbdc87b024" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>kinase_info.subfamily.value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>subfamily
+Eph     12
+Src     11
+STE7     7
+NEK      7
+CK1      6
+        ..
+PDK1     1
+GCN2     1
+CDC7     1
+MAST     1
+RAF      1
+Name: count, Length: 136, dtype: int64</code></pre>
+</div>
+</div>
+<div id="0d5ca49c-e581-4515-8e4a-6a7ed8a65f4e" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>kinase_info.family.value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>family
+STE20    22
+CAMKL    17
+Eph      12
+MAPK     12
+Src      11
+         ..
+STK33     1
+PDK1      1
+CDC7      1
+MAST      1
+RAF       1
+Name: count, Length: 88, dtype: int64</code></pre>
+</div>
+</div>
+<div id="0aa14d51-2623-45b1-8c25-d059fd9f93f2" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>kinase_info.group.value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>group
+TK          80
+CAMK        47
+AGC         45
+Other       40
+CMGC        39
+STE         35
+TKL         21
+CK1          9
+Atypical     4
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<div id="865d0b45-1019-4590-b773-8f85484c5291" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>splits <span class="op">=</span> get_splits(kinase_info, group<span class="op">=</span><span class="st">'subfamily'</span>,nfold<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>split0 <span class="op">=</span> splits[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>GroupKFold(n_splits=5, random_state=None, shuffle=False)
+# subfamily in train set: 110
+# subfamily in test set: 26</code></pre>
+</div>
+</div>
+</section>
+<section id="dataset" class="level2">
+<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
+<div id="bf151735-36f5-409f-a3ba-a05067ebcf32" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> GeneralDataset(df,feat_col,target_col)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="dcc92b9d-bd8e-4b48-b693-cfe6777f81fc" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(ds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>320</code></pre>
+</div>
+</div>
+<div id="2e8ab264-59a0-42b0-aa7e-70c5c3b5166d" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> DataLoader(ds, batch_size<span class="op">=</span><span class="dv">64</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="32f548b0-0771-4eae-a850-d407559917f0" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>xb,yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dl))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>xb.shape,yb.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>(torch.Size([64, 1024]), torch.Size([64, 23, 41]))</code></pre>
+</div>
+</div>
+</section>
+<section id="model" class="level2">
+<h2 class="anchored" data-anchor-id="model">Model</h2>
+<div id="61d51f40-d98d-4c3a-9721-f7a4084a2cdf" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>n_feature <span class="op">=</span> <span class="bu">len</span>(feat_col)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>n_target <span class="op">=</span> <span class="bu">len</span>(target_col)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1e4917ae-79be-4bfc-8f9e-02598b164cbb" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># def get_mlp(): return PSSM_model(n_feature,n_target,model='MLP')</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_cnn(): <span class="cf">return</span> PSSM_model(n_feature,n_target,model<span class="op">=</span><span class="st">'CNN'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="18bf4378-55b6-489f-8f50-40f38ee9d864" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> get_cnn()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="6df6e66a-51ce-4e2c-a1e5-9e4af12bf271" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>logits<span class="op">=</span> model(xb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="e9c53f7d-f568-431c-8410-f28c544c97d3" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>logits.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>torch.Size([64, 23, 41])</code></pre>
+</div>
+</div>
+</section>
+<section id="loss" class="level2">
+<h2 class="anchored" data-anchor-id="loss">Loss</h2>
+<div id="cf2130dd-853f-49e3-a5e9-89ad20ebba16" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>CE(logits,yb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>tensor(3.3115, grad_fn=&lt;MeanBackward0&gt;)</code></pre>
+</div>
+</div>
+</section>
+<section id="metrics" class="level2">
+<h2 class="anchored" data-anchor-id="metrics">Metrics</h2>
+<div id="010ad9b4-2a38-42c1-b382-72997019c4d8" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>KLD(logits,yb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>tensor(0.5317, grad_fn=&lt;MeanBackward0&gt;)</code></pre>
+</div>
+</div>
+<div id="6f6f0885-3f25-48e4-ae07-8b2a93caa44e" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>JSD(logits,yb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>tensor(0.1252, grad_fn=&lt;MeanBackward0&gt;)</code></pre>
+</div>
+</div>
+</section>
+<section id="cv-train" class="level2">
+<h2 class="anchored" data-anchor-id="cv-train">CV train</h2>
+<blockquote class="blockquote">
+<p>cross-validation</p>
+</blockquote>
+<div id="f5564200-844a-46e5-aa91-1fd85d3c5d11" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>oof <span class="op">=</span> train_dl_cv(df,feat_col,target_col,</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                  splits <span class="op">=</span> splits,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                  model_func <span class="op">=</span> get_cnn,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                  n_epoch<span class="op">=</span><span class="dv">20</span>,lr<span class="op">=</span><span class="fl">3e-3</span>,save<span class="op">=</span><span class="st">'cnn_cddm'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold0------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.282649</td>
+<td>3.128296</td>
+<td>0.319262</td>
+<td>0.081570</td>
+<td>00:01</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.241650</td>
+<td>3.113522</td>
+<td>0.304488</td>
+<td>0.079595</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.212050</td>
+<td>3.113102</td>
+<td>0.304069</td>
+<td>0.077892</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3.195983</td>
+<td>3.120565</td>
+<td>0.311531</td>
+<td>0.078662</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>3.178256</td>
+<td>2.976437</td>
+<td>0.167403</td>
+<td>0.044890</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>3.148183</td>
+<td>2.948758</td>
+<td>0.139725</td>
+<td>0.036188</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>3.109516</td>
+<td>2.925130</td>
+<td>0.116096</td>
+<td>0.029711</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>3.072004</td>
+<td>2.909240</td>
+<td>0.100206</td>
+<td>0.026152</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>3.039572</td>
+<td>2.904013</td>
+<td>0.094980</td>
+<td>0.025093</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>3.012379</td>
+<td>2.898960</td>
+<td>0.089926</td>
+<td>0.023662</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.989801</td>
+<td>2.899136</td>
+<td>0.090103</td>
+<td>0.023424</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.970484</td>
+<td>2.899322</td>
+<td>0.090289</td>
+<td>0.023485</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.954165</td>
+<td>2.898535</td>
+<td>0.089501</td>
+<td>0.023218</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.940085</td>
+<td>2.897991</td>
+<td>0.088957</td>
+<td>0.023097</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.927743</td>
+<td>2.896062</td>
+<td>0.087028</td>
+<td>0.022649</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.917165</td>
+<td>2.895469</td>
+<td>0.086436</td>
+<td>0.022511</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.907989</td>
+<td>2.896032</td>
+<td>0.086999</td>
+<td>0.022646</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.899801</td>
+<td>2.895162</td>
+<td>0.086129</td>
+<td>0.022428</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.892946</td>
+<td>2.894896</td>
+<td>0.085862</td>
+<td>0.022354</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.886997</td>
+<td>2.894820</td>
+<td>0.085787</td>
+<td>0.022334</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold1------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.282195</td>
+<td>3.130908</td>
+<td>0.322224</td>
+<td>0.081733</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.243584</td>
+<td>3.113548</td>
+<td>0.304865</td>
+<td>0.078650</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.219855</td>
+<td>3.120547</td>
+<td>0.311864</td>
+<td>0.079403</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3.209427</td>
+<td>3.087194</td>
+<td>0.278511</td>
+<td>0.069197</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>3.201059</td>
+<td>2.992566</td>
+<td>0.183883</td>
+<td>0.048371</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>3.167005</td>
+<td>2.937138</td>
+<td>0.128454</td>
+<td>0.033072</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>3.121017</td>
+<td>2.924041</td>
+<td>0.115357</td>
+<td>0.029413</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>3.082160</td>
+<td>2.915458</td>
+<td>0.106775</td>
+<td>0.027174</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>3.049422</td>
+<td>2.906384</td>
+<td>0.097700</td>
+<td>0.025222</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>3.022278</td>
+<td>2.902709</td>
+<td>0.094025</td>
+<td>0.024238</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.999649</td>
+<td>2.899378</td>
+<td>0.090695</td>
+<td>0.023322</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.980213</td>
+<td>2.898759</td>
+<td>0.090075</td>
+<td>0.023229</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.963545</td>
+<td>2.898273</td>
+<td>0.089589</td>
+<td>0.022956</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.949331</td>
+<td>2.897189</td>
+<td>0.088506</td>
+<td>0.022689</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.936587</td>
+<td>2.896288</td>
+<td>0.087604</td>
+<td>0.022514</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.925316</td>
+<td>2.894401</td>
+<td>0.085718</td>
+<td>0.022021</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.915478</td>
+<td>2.893880</td>
+<td>0.085196</td>
+<td>0.021894</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.907102</td>
+<td>2.893515</td>
+<td>0.084832</td>
+<td>0.021793</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.899950</td>
+<td>2.893503</td>
+<td>0.084820</td>
+<td>0.021781</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.893546</td>
+<td>2.893279</td>
+<td>0.084595</td>
+<td>0.021737</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold2------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.282472</td>
+<td>3.127070</td>
+<td>0.353896</td>
+<td>0.091299</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.241385</td>
+<td>3.109268</td>
+<td>0.336093</td>
+<td>0.088014</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.209924</td>
+<td>3.114542</td>
+<td>0.341367</td>
+<td>0.087262</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3.193899</td>
+<td>3.053725</td>
+<td>0.280551</td>
+<td>0.073127</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>3.181828</td>
+<td>2.961300</td>
+<td>0.188125</td>
+<td>0.050201</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>3.145959</td>
+<td>2.931028</td>
+<td>0.157853</td>
+<td>0.041150</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>3.109088</td>
+<td>2.925400</td>
+<td>0.152225</td>
+<td>0.038905</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>3.075637</td>
+<td>2.922864</td>
+<td>0.149690</td>
+<td>0.038691</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>3.047635</td>
+<td>2.909077</td>
+<td>0.135902</td>
+<td>0.035387</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>3.024517</td>
+<td>2.901939</td>
+<td>0.128764</td>
+<td>0.033550</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>3.003808</td>
+<td>2.899364</td>
+<td>0.126189</td>
+<td>0.032804</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.984565</td>
+<td>2.898607</td>
+<td>0.125433</td>
+<td>0.032361</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.967488</td>
+<td>2.896226</td>
+<td>0.123052</td>
+<td>0.031884</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.952080</td>
+<td>2.895696</td>
+<td>0.122522</td>
+<td>0.031629</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.938943</td>
+<td>2.895282</td>
+<td>0.122107</td>
+<td>0.031550</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.927504</td>
+<td>2.894837</td>
+<td>0.121663</td>
+<td>0.031524</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.917730</td>
+<td>2.893668</td>
+<td>0.120494</td>
+<td>0.031259</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.908983</td>
+<td>2.893366</td>
+<td>0.120192</td>
+<td>0.031149</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.901532</td>
+<td>2.893119</td>
+<td>0.119945</td>
+<td>0.031088</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.895179</td>
+<td>2.893249</td>
+<td>0.120075</td>
+<td>0.031103</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold3------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.280588</td>
+<td>3.129339</td>
+<td>0.335539</td>
+<td>0.085304</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.240295</td>
+<td>3.119176</td>
+<td>0.325376</td>
+<td>0.083852</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.210839</td>
+<td>3.091391</td>
+<td>0.297591</td>
+<td>0.077241</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3.200143</td>
+<td>3.042270</td>
+<td>0.248470</td>
+<td>0.065589</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>3.195208</td>
+<td>3.029967</td>
+<td>0.236167</td>
+<td>0.060239</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>3.157714</td>
+<td>2.951658</td>
+<td>0.157859</td>
+<td>0.039547</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>3.114407</td>
+<td>2.937240</td>
+<td>0.143440</td>
+<td>0.036184</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>3.076996</td>
+<td>2.915984</td>
+<td>0.122185</td>
+<td>0.031200</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>3.044734</td>
+<td>2.903373</td>
+<td>0.109573</td>
+<td>0.028193</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>3.018122</td>
+<td>2.900592</td>
+<td>0.106792</td>
+<td>0.027362</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.995771</td>
+<td>2.897802</td>
+<td>0.104002</td>
+<td>0.026672</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.977186</td>
+<td>2.896495</td>
+<td>0.102695</td>
+<td>0.026356</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.960754</td>
+<td>2.895625</td>
+<td>0.101826</td>
+<td>0.026132</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.946897</td>
+<td>2.895158</td>
+<td>0.101358</td>
+<td>0.025921</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.935326</td>
+<td>2.893981</td>
+<td>0.100182</td>
+<td>0.025680</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.925143</td>
+<td>2.893090</td>
+<td>0.099290</td>
+<td>0.025458</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.916389</td>
+<td>2.892680</td>
+<td>0.098880</td>
+<td>0.025363</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.908602</td>
+<td>2.891653</td>
+<td>0.097853</td>
+<td>0.025092</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.901875</td>
+<td>2.891660</td>
+<td>0.097860</td>
+<td>0.025101</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.896487</td>
+<td>2.891503</td>
+<td>0.097704</td>
+<td>0.025064</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold4------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.283504</td>
+<td>3.130594</td>
+<td>0.363589</td>
+<td>0.093193</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.243992</td>
+<td>3.116076</td>
+<td>0.349071</td>
+<td>0.090924</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.210798</td>
+<td>3.120450</td>
+<td>0.353445</td>
+<td>0.090563</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3.199268</td>
+<td>3.072872</td>
+<td>0.305868</td>
+<td>0.079987</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>3.177695</td>
+<td>2.966492</td>
+<td>0.199487</td>
+<td>0.053601</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>3.137152</td>
+<td>2.917118</td>
+<td>0.150113</td>
+<td>0.039282</td>
+<td>-1:59:59</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>3.099840</td>
+<td>2.911311</td>
+<td>0.144307</td>
+<td>0.037135</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>3.071257</td>
+<td>2.897541</td>
+<td>0.130536</td>
+<td>0.034004</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>3.047829</td>
+<td>2.894860</td>
+<td>0.127856</td>
+<td>0.033557</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>3.024281</td>
+<td>2.900576</td>
+<td>0.133571</td>
+<td>0.034486</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>3.002414</td>
+<td>2.898617</td>
+<td>0.131613</td>
+<td>0.034054</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.983205</td>
+<td>2.894372</td>
+<td>0.127367</td>
+<td>0.032931</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.966494</td>
+<td>2.888815</td>
+<td>0.121811</td>
+<td>0.031625</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.952212</td>
+<td>2.885732</td>
+<td>0.118727</td>
+<td>0.031049</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.939676</td>
+<td>2.885109</td>
+<td>0.118105</td>
+<td>0.030705</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.928643</td>
+<td>2.883477</td>
+<td>0.116472</td>
+<td>0.030395</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.919168</td>
+<td>2.882151</td>
+<td>0.115146</td>
+<td>0.030121</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.910880</td>
+<td>2.881615</td>
+<td>0.114610</td>
+<td>0.030057</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.903741</td>
+<td>2.881046</td>
+<td>0.114041</td>
+<td>0.029917</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.897946</td>
+<td>2.881109</td>
+<td>0.114104</td>
+<td>0.029928</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+<div id="d3aaf2b3-3a94-413a-bf30-77ddd61a4a4f" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>oof.to_parquet(<span class="st">'raw/oof_cddm.parquet'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="score" class="level2">
+<h2 class="anchored" data-anchor-id="score">Score</h2>
+<div id="33525bfa-668a-4d3c-bacc-e14f7ec9b604" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.pssm <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="6e783921-fb25-41ca-bfb8-1dd198dd8d96" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> score_df(target,pred,func):</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    distance <span class="op">=</span> [func(target.loc[i],pred.loc[i,target.columns]) <span class="cf">for</span> i <span class="kw">in</span> target.index]</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series(distance,index<span class="op">=</span>target.index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ab4ac472-f218-46ea-9f4a-fd2ccaa62a9e" class="cell" data-execution_count="44">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>jsd_df <span class="op">=</span> partial(score_df,func<span class="op">=</span>js_divergence_flat)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>kld_df <span class="op">=</span> partial(score_df,func<span class="op">=</span>kl_divergence_flat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f33fa0e8-ad65-4143-800e-6b78625ca8c7" class="cell" data-execution_count="45">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>target<span class="op">=</span>df[target_col].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3cc15e9e-024b-437d-b458-697f2d94db8f" class="cell" data-execution_count="46">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>kinase_info[<span class="st">'group_split'</span>] <span class="op">=</span> oof.nfold</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="17af9921-60fa-46da-ae28-5341324c8ce2" class="cell" data-execution_count="47">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>kinase_info[<span class="st">'group_jsd'</span>] <span class="op">=</span>jsd_df(target,oof)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="afec83f4-e09f-4409-b918-41c316dc846f" class="cell" data-execution_count="48">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.plot <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="30d8190a-f4ff-43bf-9da1-fefcae250cd4" class="cell" data-execution_count="49">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>set_sns()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="6a4a027b-935a-4ef4-a488-640c4a9e021c" class="cell" data-execution_count="50">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>plot_bar(kinase_info,<span class="st">'group_jsd'</span>,group<span class="op">=</span><span class="st">'group'</span>,palette<span class="op">=</span>group_color,figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">4</span>))</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'JS divergence'</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'GroupSplit by subfamily (nfold=5) in kinase subfamily'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="50">
+<pre><code>Text(0.5, 1.0, 'GroupSplit by subfamily (nfold=5) in kinase subfamily')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="kd_07a_cddm_training_subfamily_files/figure-html/cell-37-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="2ecd6a56-f899-45e6-8fbf-634f6cc70b8c" class="cell" data-execution_count="51">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>group_color <span class="op">=</span> pd.DataFrame(group_color).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="296cb262-fb72-4b08-b635-37caacbfc9fd" class="cell" data-execution_count="52">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>sty_color</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="52">
+<pre><code>{'S': (0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
+ 'T': (0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
+ 'Y': (1.0, 0.4980392156862745, 0.054901960784313725)}</code></pre>
+</div>
+</div>
+<div id="3291f22a-9446-4c05-b36b-2b2201087e77" class="cell" data-execution_count="53">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>group_color <span class="op">=</span> group_color.reset_index(names<span class="op">=</span><span class="st">'modi_group'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="5236e3ee-48f4-4ff2-9d91-80ea40286f63" class="cell" data-execution_count="54">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> Data.get_kinase_info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ac6323a4-444d-41a7-a73c-92241df2d695" class="cell" data-execution_count="55">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>subfamily_color <span class="op">=</span> info[[<span class="st">'modi_group'</span>,<span class="st">'subfamily'</span>]].merge(group_color).drop(columns<span class="op">=</span>[<span class="st">'modi_group'</span>]).set_index(<span class="st">'subfamily'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="0264131e-9d56-41b7-becc-30b6c7a917d7" class="cell" data-execution_count="56">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>subfamily_color <span class="op">=</span> subfamily_color.<span class="bu">apply</span>(<span class="bu">tuple</span>, axis<span class="op">=</span><span class="dv">1</span>).to_dict()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="398b7754-03be-418a-9b73-fd932fcf031b" class="cell" data-execution_count="57">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>plot_bar(kinase_info,<span class="st">'group_jsd'</span>,group<span class="op">=</span><span class="st">'subfamily'</span>,palette <span class="op">=</span> subfamily_color, figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">7</span>))</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'JS divergence'</span>)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Stratified split in kinase subfamily')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="57">
+<pre><code>Text(0, 0.5, 'JS divergence')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="kd_07a_cddm_training_subfamily_files/figure-html/cell-45-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="1b08a4c7-1386-48ee-ab6d-6e7d57cc0df0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.pssm <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="246096b8-012c-42a9-8189-4c5052fc207b" class="cell" data-execution_count="58">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_one_pssm(target,pred,idx):</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>    target_pssm <span class="op">=</span> recover_pssm(target.loc[idx])</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>    pred_pssm <span class="op">=</span> recover_pssm(pred.loc[idx,target.columns])</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>    plot_heatmap(target_pssm,figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">6</span>))</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>    plot_heatmap(pred_pssm,figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="e0fd3280-c1fe-48fc-81d2-78ddb3f49eb2" class="cell" data-execution_count="59">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>set_sns(<span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="8b846cff-d061-418d-b9a5-6b3a529cc47a" class="cell" data-execution_count="63">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>kinase_info[kinase_info.kinase.<span class="bu">str</span>.contains(<span class="st">'CDK'</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="63">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th">subfamily</th>
+<th data-quarto-table-cell-role="th">family</th>
+<th data-quarto-table-cell-role="th">group</th>
+<th data-quarto-table-cell-role="th">group_split</th>
+<th data-quarto-table-cell-role="th">group_jsd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>P06493_CDK1_HUMAN_KD1</td>
+<td>CDC2</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>1</td>
+<td>0.005642</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>P24941_CDK2_HUMAN_KD1</td>
+<td>CDK2</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>0</td>
+<td>0.006260</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">102</th>
+<td>Q00535_CDK5_HUMAN_KD1</td>
+<td>CDK5</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>3</td>
+<td>0.008968</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">168</th>
+<td>P50750_CDK9_HUMAN_KD1</td>
+<td>CDK9</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>4</td>
+<td>0.018047</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">204</th>
+<td>Q00534_CDK6_HUMAN_KD1</td>
+<td>CDK4</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>1</td>
+<td>0.016037</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">224</th>
+<td>P50613_CDK7_HUMAN_KD1</td>
+<td>CDK7</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>2</td>
+<td>0.030289</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">228</th>
+<td>Q00526_CDK3_HUMAN_KD1</td>
+<td>CDK2</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>0</td>
+<td>0.020181</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">240</th>
+<td>P11802_CDK4_HUMAN_KD1</td>
+<td>CDK4</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>1</td>
+<td>0.031994</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">280</th>
+<td>P49336_CDK8_HUMAN_KD1</td>
+<td>CDK8</td>
+<td>CDK</td>
+<td>CMGC</td>
+<td>0</td>
+<td>0.045855</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>CDK7:</p>
+<div id="381a61bb-3df7-45b3-9837-a5d021e13576" class="cell" data-execution_count="66">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>plot_one_pssm(target,oof,<span class="dv">224</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="kd_07a_cddm_training_subfamily_files/figure-html/cell-51-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="kd_07a_cddm_training_subfamily_files/figure-html/cell-51-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Compare with pspa CDK:</p>
+<div id="aa2ece15-9441-4956-a454-c710afd8e236" class="cell" data-execution_count="67">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>df2<span class="op">=</span>pd.read_parquet(<span class="st">'train/pspa_t5.parquet'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="faaaf9ab-07d7-43ae-b06d-0013beb177ba" class="cell" data-execution_count="68">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>series<span class="op">=</span> df2[df2.index.<span class="bu">str</span>.contains(<span class="st">'CDK7'</span>)].iloc[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="4b9d1c5c-d40e-4f3a-8eb9-8f783d689f42" class="cell" data-execution_count="70">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>plot_heatmap(recover_pssm(series),figsize<span class="op">=</span>(<span class="fl">3.5</span>,<span class="dv">6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="kd_07a_cddm_training_subfamily_files/figure-html/cell-54-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas-raw");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas-raw/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
