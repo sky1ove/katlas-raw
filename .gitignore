@@ -19,6 +19,7 @@ train
 old
 out
 models
+new_proj/
 _*
 
 # Byte-compiled / optimized / DLL files
